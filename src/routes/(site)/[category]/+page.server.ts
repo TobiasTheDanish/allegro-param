@@ -1,18 +1,20 @@
-import { fail, redirect } from "@sveltejs/kit";
-import type { PageServerLoad } from "./$types";
+import { fail, redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, cookies, locals }) => {
-	const category = parseInt(params.category)
+	const category = parseInt(params.category);
 
-	const accessToken = cookies.get('access-token')
+	const accessToken = cookies.get('access-token');
 	if (!accessToken) {
-		redirect(303, '/')
+		redirect(303, '/');
 	}
 
-	const [parameters, error] = await locals.service.getParams({category, accessToken})
+	const [parameters, error] = await locals.service.getParams({ category, accessToken });
 	if (error != null) {
-		fail(500, {error})
+		fail(500, { error });
 	}
 
-	return {parameters}
-}
+	const required = parameters.filter((param) => param.required);
+
+	return { required };
+};
